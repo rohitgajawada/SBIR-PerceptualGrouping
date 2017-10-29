@@ -1,10 +1,9 @@
 clear all; close all;
-% put castle
 classes = {'airplane','banana','cannon','cow','duck','hamburger','hermit_crab','kangaroo','owl','rhinoceros','scorpion','mouse','starfish','sword','teddy_bear','umbrella','wheelchair','pineapple','penguin'
 };
 addpath(genpath('./'));
-%load modelBsds.mat;
-opt = initialopt;
+w = [1.1007 -0.0011]'
+C = 0.5;
 
 data_path = './sketchy/photos/';
 tic;
@@ -17,7 +16,6 @@ for i=1:numel(classes)
         I = imread(char(x));
         I_out = edgethin(I);
         
-        % Get curve segments
         I = uint8(I_out > 0.1);
         try
             SegList  = GetConSeg( I );
@@ -26,10 +24,8 @@ for i=1:numel(classes)
             continue
         end
 
-        % obtain perceptual grouping result by graph-cuts
-        labels = GestaltGroupRsvm( SegList,opt.RelativeImp,opt.C);
-        % show grouping result
-        %showGrouping(SegList,labels,edges_fname);
+        labels = GestaltGroupRsvm(SegList, w, C);
+
         try
             energy_filtered_image = energyCalc(I, labels, SegList, 0.22);
         catch
@@ -43,5 +39,3 @@ for i=1:numel(classes)
     disp(strcat('Finishing class: ', char(classes(i))));
 end
 toc;
-% airplane, duck
-% banana
